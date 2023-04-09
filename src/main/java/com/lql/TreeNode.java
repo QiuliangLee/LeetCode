@@ -5,11 +5,15 @@ package com.lql;
  * @create 2022-12-11 5:34
  */
 public class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
+    public int val;
+    public TreeNode left;
+    public TreeNode right;
 
-    TreeNode(int x) {
+    public TreeNode(int x) {
         val = x;
+    }
+
+    public TreeNode() {
+
     }
 }

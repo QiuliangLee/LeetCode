@@ -2,34 +2,52 @@ package com.lql;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.List;
 
+class Solution {
+    boolean[] visited;
+    boolean[] alreadTraverse;
 
-public class Solution {
     @Test
     public void test() {
-        System.out.println(-3>>1);
+        System.out.println(canFinish(2, new int[][]{{1, 0}, {0, 1}}));
     }
 
-    List<List<String>> res=new LinkedList<>();
-    public List<List<String>> groupAnagrams(String[] strs) {
-        HashMap<String, LinkedList<String>> map=new HashMap<>();
-        for(String str: strs){
-            String code=encode(str);
-            map.putIfAbsent(code, new LinkedList<>());
-            map.get(code).add(str);
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        visited = new boolean[numCourses];
+        alreadTraverse = new boolean[numCourses];
+        List<Integer>[] graph = buildGraph(numCourses, prerequisites);
+        for (int i = 0; i < graph.length; i++) {
+            if (traverse(graph, i)) {
+                return true;
+            }
         }
-        for(Map.Entry<String, LinkedList<String>> entry: map.entrySet()){
-            res.add(entry.getValue());
-        }
-        return res;
+        return false;
     }
 
-    public String encode(String str){
-        char[] count=new char[26];
-        for(char c: str.toCharArray()){
-            count[c-'a']++;
+    public List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
+        List<Integer>[] graph = new LinkedList[numCourses];
+        for (int i = 0; i < numCourses; i++) {
+            graph[i] = new LinkedList<>();
         }
-        return String.valueOf(count);
+        for (int[] edge : prerequisites) {
+            int w = edge[1], v = edge[0];
+            graph[w].add(v);
+        }
+        return graph;
+    }
+
+    public boolean traverse(List<Integer>[] graph, int cur) {
+        if (visited[cur] || alreadTraverse[cur]) {
+            return false;
+        }
+        visited[cur] = true;
+        for (int next : graph[cur]) {
+            if (traverse(graph, next)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,0 +1,63 @@
+from pyplantuml import PlantUML
+from io import StringIO
+
+# 定义PlantUML代码
+uml_code = """
+@startuml
+
+title Multi-Scale Encoder and Skip Connections
+
+skinparam nodesep 80
+
+' Input layer
+rectangle "Input\nsequence" as input_layer
+note left: The input sequence is\nfed into the encoder.
+
+' Multi-scale encoder
+rectangle "Multi-Scale\nEncoder" as encoder {
+    ' Minute-level encoder
+    rectangle "Minute-level\nencoder" as minute_encoder
+    ' Hour-level encoder
+    rectangle "Hour-level\nencoder" as hour_encoder
+    ' Day-level encoder
+    rectangle "Day-level\nencoder" as day_encoder
+    ' Week/Month-level encoder
+    rectangle "Week/Month-level\nencoder" as week_month_encoder
+    ' Year-level encoder
+    rectangle "Year-level\nencoder" as year_encoder
+}
+
+' Skip connections
+database "Skip connections" as skip_connections
+note left: Skip connections\nare used to\ncombine the outputs\nof the encoders.
+
+' Output layer
+rectangle "Output\nsequence" as output_layer
+note right: The final output\nsequence is\nproduced by the decoder.
+
+' Connect nodes
+input_layer --> minute_encoder
+input_layer --> hour_encoder
+input_layer --> day_encoder
+input_layer --> week_month_encoder
+input_layer --> year_encoder
+minute_encoder --> hour_encoder
+hour_encoder --> day_encoder
+day_encoder --> week_month_encoder
+week_month_encoder --> year_encoder
+minute_encoder --> skip_connections
+hour_encoder --> skip_connections
+day_encoder --> skip_connections
+week_month_encoder --> skip_connections
+year_encoder --> skip_connections
+skip_connections --> encoder
+encoder --> output_layer
+
+@enduml
+"""
+
+# 将PlantUML代码传递给PlantUML对象并生成图形
+with PlantUML(output_format='png') as plantuml:
+    out = plantuml.processes(StringIO(uml_code))
+    with open("multiscale_encoder.png", "wb") as f:
+        f.write(out)
