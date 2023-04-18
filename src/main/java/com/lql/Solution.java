@@ -2,52 +2,32 @@ package com.lql;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-
 class Solution {
-    boolean[] visited;
-    boolean[] alreadTraverse;
-
     @Test
     public void test() {
-        System.out.println(canFinish(2, new int[][]{{1, 0}, {0, 1}}));
+        System.out.println(findTargetSumWays(new int[]{1, 1, 1, 1, 1}, 3));
     }
 
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
-        visited = new boolean[numCourses];
-        alreadTraverse = new boolean[numCourses];
-        List<Integer>[] graph = buildGraph(numCourses, prerequisites);
-        for (int i = 0; i < graph.length; i++) {
-            if (traverse(graph, i)) {
-                return true;
+    public int findTargetSumWays(int[] nums, int target) {
+        int sum = 0;
+        for (int x : nums) {
+            sum += x;
+        }
+        if (((sum + target) & 1) == 1) {
+            return 0;
+        }
+        sum = (sum + target) / 2;
+        int[][] dp = new int[nums.length + 1][sum + 1];
+        dp[0][0] = 1;
+        for (int i = 1; i < dp.length; i++) {
+            for (int j = 0; j < dp[i].length; j++) {
+                if (j >= nums[i - 1]) {
+                    dp[i][j] = dp[i - 1][j] + dp[i - 1][j - nums[i - 1]];
+                } else {
+                    dp[i][j] = dp[i - 1][j];
+                }
             }
         }
-        return false;
-    }
-
-    public List<Integer>[] buildGraph(int numCourses, int[][] prerequisites) {
-        List<Integer>[] graph = new LinkedList[numCourses];
-        for (int i = 0; i < numCourses; i++) {
-            graph[i] = new LinkedList<>();
-        }
-        for (int[] edge : prerequisites) {
-            int w = edge[1], v = edge[0];
-            graph[w].add(v);
-        }
-        return graph;
-    }
-
-    public boolean traverse(List<Integer>[] graph, int cur) {
-        if (visited[cur] || alreadTraverse[cur]) {
-            return false;
-        }
-        visited[cur] = true;
-        for (int next : graph[cur]) {
-            if (traverse(graph, next)) {
-                return true;
-            }
-        }
-        return false;
+        return dp[dp.length - 1][dp[0].length - 1];
     }
 }
